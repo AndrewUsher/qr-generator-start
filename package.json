@@ -20,10 +20,15 @@
   },
   "homepage": "https://github.com/AndrewUsher/qr-generator-start#readme",
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.7",
     "@tanstack/react-router": "^1.16.0",
     "@tanstack/react-start": "^0.0.1-alpha.0",
+    "clsx": "^2.1.1",
+    "postcss": "^8.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tailwind-merge": "^3.3.0",
+    "tailwindcss": "^4.1.7",
     "vinxi": "^0.2.0"
   },
   "devDependencies": {
