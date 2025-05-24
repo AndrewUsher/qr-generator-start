@@ -14,11 +14,17 @@ graph TD
     A --> C[client.tsx]
     A --> D[router.tsx]
     A --> E[ssr.tsx]
-    B --> F[__root.tsx]
-    B --> G[index.tsx]
-    H[app.config.ts]
-    I[tsconfig.json]
-    J[package.json]
+    A --> F[styles/]
+    A --> G[lib/]
+    B --> H[__root.tsx]
+    B --> I[index.tsx]
+    F --> J[app.css]
+    G --> K[utils.ts]
+    L[app.config.ts]
+    M[tsconfig.json]
+    N[package.json]
+    O[components.json]
+    P[postcss.config.ts]
 ```
 
 ### Application Flow
@@ -56,6 +62,7 @@ sequenceDiagram
 - Entry point: `app/client.tsx`
 - Hydrates the server-rendered HTML
 - Initializes client-side routing
+- Imports global styles with Tailwind CSS
 
 ### 3. Routing
 
@@ -69,6 +76,15 @@ sequenceDiagram
 - Implemented using `createServerFn`
 - Example: Counter functionality in index route
 - Handles file system operations
+
+### 5. Styling
+
+- shadcn/ui components for consistent UI
+- Tailwind CSS for utility-first styling
+- Global styles in `app/styles/app.css`
+- PostCSS processing with `@tailwindcss/postcss`
+- Utility functions in `app/lib/utils.ts`
+- Customizable theme configuration in `components.json`
 
 ## Development
 
@@ -93,6 +109,9 @@ npm start
 - **Language**: TypeScript
 - **Build Tool**: Vinxi
 - **Runtime**: Node.js
+- **UI Components**: shadcn/ui
+- **Styling**: Tailwind CSS
+- **CSS Processing**: PostCSS
 
 ## Features
 
@@ -101,3 +120,7 @@ npm start
 - Type-safe server functions
 - Hot module replacement
 - Production-ready build system
+- Modern UI components with shadcn/ui
+- Utility-first CSS with Tailwind
+- Responsive design support
+- Modern CSS processing pipeline
