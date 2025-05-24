@@ -1,0 +1,36 @@
+{
+  "name": "qr-generator-start",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "start": "vinxi start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndrewUsher/qr-generator-start.git"
+  },
+  "keywords": [],
+  "author": "AndrewUsher",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AndrewUsher/qr-generator-start/issues"
+  },
+  "homepage": "https://github.com/AndrewUsher/qr-generator-start#readme",
+  "dependencies": {
+    "@tanstack/react-router": "^1.16.0",
+    "@tanstack/react-start": "^0.0.1-alpha.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "vinxi": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "typescript": "^5.0.0",
+    "vite-tsconfig-paths": "^4.3.0"
+  }
+}
