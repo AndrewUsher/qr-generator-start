@@ -14,11 +14,14 @@ graph TD
     A --> C[client.tsx]
     A --> D[router.tsx]
     A --> E[ssr.tsx]
-    B --> F[__root.tsx]
-    B --> G[index.tsx]
-    H[app.config.ts]
-    I[tsconfig.json]
-    J[package.json]
+    A --> F[global.css]
+    B --> G[__root.tsx]
+    B --> H[index.tsx]
+    I[app.config.ts]
+    J[tsconfig.json]
+    K[package.json]
+    L[tailwind.config.js]
+    M[postcss.config.js]
 ```
 
 ### Application Flow
@@ -56,6 +59,7 @@ sequenceDiagram
 - Entry point: `app/client.tsx`
 - Hydrates the server-rendered HTML
 - Initializes client-side routing
+- Imports global styles with Tailwind CSS
 
 ### 3. Routing
 
@@ -69,6 +73,13 @@ sequenceDiagram
 - Implemented using `createServerFn`
 - Example: Counter functionality in index route
 - Handles file system operations
+
+### 5. Styling
+
+- Tailwind CSS for utility-first styling
+- Global styles in `app/global.css`
+- PostCSS processing with autoprefixer
+- Customizable theme configuration in `tailwind.config.js`
 
 ## Development
 
@@ -93,6 +104,8 @@ npm start
 - **Language**: TypeScript
 - **Build Tool**: Vinxi
 - **Runtime**: Node.js
+- **Styling**: Tailwind CSS
+- **CSS Processing**: PostCSS
 
 ## Features
 
@@ -101,3 +114,6 @@ npm start
 - Type-safe server functions
 - Hot module replacement
 - Production-ready build system
+- Utility-first CSS with Tailwind
+- Responsive design support
+- Modern CSS processing pipeline
