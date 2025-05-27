@@ -11,7 +11,7 @@ const destinations: Destination[] = [
 	{ label: 'Google Doc', icon: '📄', enabled: false },
 	{ label: 'Youtube', icon: '▶️', enabled: false },
 	{ label: 'Facebook', icon: '📘', enabled: false },
-	{ label: 'Upload a File', icon: '📁', enabled: false },
+	{ label: 'File', icon: '📁', enabled: true },
 	{ label: 'Instagram', icon: '📸', enabled: true },
 	{ label: 'Message', icon: '💬', enabled: true },
 	{ label: 'Email', icon: '✉️', enabled: true },

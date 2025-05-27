@@ -206,4 +206,104 @@ describe('QRInputPreview', () => {
 		expect(mockClipboard.writeText).toHaveBeenCalledWith('https://instagram.com/testuser')
 		expect(screen.getByText('Copied!')).toBeInTheDocument()
 	})
+
+	it('renders file form when file destination is selected', () => {
+		const fileDestination: Destination = {
+			label: 'File',
+			icon: '📁',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={fileDestination} qrSize="medium" />)
+		expect(screen.getByText('Click to upload')).toBeInTheDocument()
+	})
+
+	it('shows file preview when image is uploaded', () => {
+		const fileDestination: Destination = {
+			label: 'File',
+			icon: '📁',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={fileDestination} qrSize="medium" />)
+		
+		const file = new File(['test'], 'test.png', { type: 'image/png' })
+		const input = screen.getByLabelText(/Click to upload/)
+		
+		Object.defineProperty(input, 'files', {
+			value: [file],
+		})
+		
+		fireEvent.change(input)
+		
+		expect(screen.getByText('test.png')).toBeInTheDocument()
+		expect(screen.getByText('0.0 KB')).toBeInTheDocument()
+	})
+
+	it('shows file type icon for non-image files', () => {
+		const fileDestination: Destination = {
+			label: 'File',
+			icon: '📁',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={fileDestination} qrSize="medium" />)
+		
+		const file = new File(['test'], 'test.pdf', { type: 'application/pdf' })
+		const input = screen.getByLabelText(/Click to upload/)
+		
+		Object.defineProperty(input, 'files', {
+			value: [file],
+		})
+		
+		fireEvent.change(input)
+		
+		expect(screen.getByText('test.pdf')).toBeInTheDocument()
+		expect(screen.getByText('PDF')).toBeInTheDocument()
+	})
+
+	it('removes file when remove button is clicked', () => {
+		const fileDestination: Destination = {
+			label: 'File',
+			icon: '📁',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={fileDestination} qrSize="medium" />)
+		
+		const file = new File(['test'], 'test.png', { type: 'image/png' })
+		const input = screen.getByLabelText(/Click to upload/)
+		
+		Object.defineProperty(input, 'files', {
+			value: [file],
+		})
+		
+		fireEvent.change(input)
+		
+		const removeButton = screen.getByLabelText('Remove file')
+		fireEvent.click(removeButton)
+		
+		expect(screen.queryByText('test.png')).not.toBeInTheDocument()
+		expect(screen.getByText('Click to upload')).toBeInTheDocument()
+	})
+
+	it('rejects files larger than 5MB', () => {
+		const fileDestination: Destination = {
+			label: 'File',
+			icon: '📁',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={fileDestination} qrSize="medium" />)
+		
+		const largeFile = new File(['x'.repeat(6 * 1024 * 1024)], 'large.png', { type: 'image/png' })
+		const input = screen.getByLabelText(/Click to upload/)
+		
+		Object.defineProperty(input, 'files', {
+			value: [largeFile],
+		})
+		
+		const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {})
+		fireEvent.change(input)
+		
+		expect(alertMock).toHaveBeenCalledWith('File size must be less than 5MB')
+		expect(screen.queryByText('large.png')).not.toBeInTheDocument()
+		
+		alertMock.mockRestore()
+	})
 })
