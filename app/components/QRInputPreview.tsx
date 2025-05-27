@@ -4,6 +4,7 @@ import type { Destination } from './DestinationSidebar'
 import { EmailForm } from './forms/EmailForm'
 import { WebsiteForm } from './forms/WebsiteForm'
 import { MessageForm } from './forms/MessageForm'
+import { InstagramForm } from './forms/InstagramForm'
 
 interface QRInputPreviewProps {
 	selectedDestination: Destination
@@ -24,6 +25,8 @@ export function QRInputPreview({ selectedDestination }: QRInputPreviewProps) {
 				return <WebsiteForm onValueChange={setQrValue} />
 			case 'Message':
 				return <MessageForm onValueChange={setQrValue} />
+			case 'Instagram':
+				return <InstagramForm onValueChange={setQrValue} />
 			default:
 				return <WebsiteForm onValueChange={setQrValue} />
 		}
