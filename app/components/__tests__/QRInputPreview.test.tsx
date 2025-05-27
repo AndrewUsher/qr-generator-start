@@ -370,4 +370,120 @@ describe('QRInputPreview', () => {
 		expect(screen.queryByText('File will be encoded directly in QR code')).not.toBeInTheDocument()
 		expect(screen.queryByText('File is too large for direct encoding')).not.toBeInTheDocument()
 	})
+
+	it('renders YouTube form when YouTube destination is selected', () => {
+		const youtubeDestination: Destination = {
+			label: 'Youtube',
+			icon: '🎥',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={youtubeDestination} qrSize="medium" />)
+		expect(screen.getByText('Content Type')).toBeInTheDocument()
+	})
+
+	it('shows video URL input when video type is selected', () => {
+		const youtubeDestination: Destination = {
+			label: 'Youtube',
+			icon: '🎥',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={youtubeDestination} qrSize="medium" />)
+		expect(screen.getByPlaceholderText('https://youtube.com/watch?v=...')).toBeInTheDocument()
+	})
+
+	it('shows channel URL input when channel type is selected', () => {
+		const youtubeDestination: Destination = {
+			label: 'Youtube',
+			icon: '🎥',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={youtubeDestination} qrSize="medium" />)
+		const select = screen.getByLabelText('Content Type')
+		fireEvent.change(select, { target: { value: 'channel' } })
+		expect(screen.getByPlaceholderText('https://youtube.com/channel/...')).toBeInTheDocument()
+	})
+
+	it('shows playlist URL input when playlist type is selected', () => {
+		const youtubeDestination: Destination = {
+			label: 'Youtube',
+			icon: '🎥',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={youtubeDestination} qrSize="medium" />)
+		const select = screen.getByLabelText('Content Type')
+		fireEvent.change(select, { target: { value: 'playlist' } })
+		expect(screen.getByPlaceholderText('https://youtube.com/playlist?list=...')).toBeInTheDocument()
+	})
+
+	it('shows video preview for valid video URL', () => {
+		const youtubeDestination: Destination = {
+			label: 'Youtube',
+			icon: '🎥',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={youtubeDestination} qrSize="medium" />)
+		const input = screen.getByPlaceholderText('https://youtube.com/watch?v=...')
+		fireEvent.change(input, { target: { value: 'https://youtube.com/watch?v=dQw4w9WgXcQ' } })
+		const linkButton = screen.getByRole('button', { name: 'Validate URL' })
+		fireEvent.click(linkButton)
+		expect(screen.getByText('Video: dQw4w9WgXcQ')).toBeInTheDocument()
+	})
+
+	it('shows channel preview for valid channel URL', () => {
+		const youtubeDestination: Destination = {
+			label: 'Youtube',
+			icon: '🎥',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={youtubeDestination} qrSize="medium" />)
+		const select = screen.getByLabelText('Content Type')
+		fireEvent.change(select, { target: { value: 'channel' } })
+		const input = screen.getByPlaceholderText('https://youtube.com/channel/...')
+		fireEvent.change(input, { target: { value: 'https://youtube.com/channel/UC1234567890' } })
+		const linkButton = screen.getByRole('button', { name: 'Validate URL' })
+		fireEvent.click(linkButton)
+		expect(screen.getByText('Channel: UC1234567890')).toBeInTheDocument()
+	})
+
+	it('shows playlist preview for valid playlist URL', () => {
+		const youtubeDestination: Destination = {
+			label: 'Youtube',
+			icon: '🎥',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={youtubeDestination} qrSize="medium" />)
+		const select = screen.getByLabelText('Content Type')
+		fireEvent.change(select, { target: { value: 'playlist' } })
+		const input = screen.getByPlaceholderText('https://youtube.com/playlist?list=...')
+		fireEvent.change(input, { target: { value: 'https://youtube.com/playlist?list=PL1234567890' } })
+		const linkButton = screen.getByRole('button', { name: 'Validate URL' })
+		fireEvent.click(linkButton)
+		expect(screen.getByText('Playlist: PL1234567890')).toBeInTheDocument()
+	})
+
+	it('copies URL to clipboard', async () => {
+		const youtubeDestination: Destination = {
+			label: 'Youtube',
+			icon: '🎥',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={youtubeDestination} qrSize="medium" />)
+		
+		// Mock clipboard API
+		const mockClipboard = {
+			writeText: vi.fn().mockResolvedValue(undefined),
+		}
+		Object.assign(navigator, {
+			clipboard: mockClipboard,
+		})
+
+		const input = screen.getByPlaceholderText('https://youtube.com/watch?v=...')
+		fireEvent.change(input, { target: { value: 'https://youtube.com/watch?v=dQw4w9WgXcQ' } })
+		
+		const copyButton = screen.getByRole('button', { name: 'Copy URL' })
+		fireEvent.click(copyButton)
+		
+		expect(mockClipboard.writeText).toHaveBeenCalledWith('https://youtube.com/watch?v=dQw4w9WgXcQ')
+		expect(screen.getByRole('button', { name: 'Copy URL' })).toBeInTheDocument()
+	})
 })

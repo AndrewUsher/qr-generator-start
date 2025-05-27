@@ -9,7 +9,7 @@ export type Destination = {
 const destinations: Destination[] = [
 	{ label: 'Website', icon: '🔗', enabled: true },
 	{ label: 'Google Doc', icon: '📄', enabled: false },
-	{ label: 'Youtube', icon: '▶️', enabled: false },
+	{ label: 'Youtube', icon: '▶️', enabled: true },
 	{ label: 'Facebook', icon: '📘', enabled: false },
 	{ label: 'File', icon: '📁', enabled: true },
 	{ label: 'Instagram', icon: '📸', enabled: true },

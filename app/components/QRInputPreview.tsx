@@ -6,6 +6,7 @@ import { WebsiteForm } from './forms/WebsiteForm'
 import { MessageForm } from './forms/MessageForm'
 import { InstagramForm } from './forms/InstagramForm'
 import { FileForm } from './forms/FileForm'
+import { YoutubeForm } from './forms/YoutubeForm'
 
 type QRSize = 'small' | 'medium' | 'large'
 
@@ -62,6 +63,8 @@ export function QRInputPreview({
 				return <InstagramForm onValueChange={setQrValue} />
 			case 'File':
 				return <FileForm onValueChange={setQrValue} />
+			case 'Youtube':
+				return <YoutubeForm onValueChange={setQrValue} />
 			default:
 				return <WebsiteForm onValueChange={setQrValue} />
 		}
