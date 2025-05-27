@@ -21,12 +21,17 @@ graph TD
     I --> J[button.tsx]
     G --> K[lib/]
     K --> L[utils.ts]
-    B --> M[__root.tsx]
-    B --> N[index.tsx]
-    O[app.config.ts]
-    P[tsconfig.json]
-    Q[package.json]
-    R[postcss.config.ts]
+    G --> M[HeroSection.tsx]
+    G --> N[MainCard.tsx]
+    G --> O[DestinationSidebar.tsx]
+    G --> P[QRInputPreview.tsx]
+    G --> Q[CustomizationPanel.tsx]
+    B --> R[__root.tsx]
+    B --> S[index.tsx]
+    T[app.config.ts]
+    U[tsconfig.json]
+    V[package.json]
+    W[postcss.config.ts]
 ```
 
 ### Application Flow
@@ -53,34 +58,40 @@ sequenceDiagram
 
 ## Key Components
 
-### 1. Server-Side Rendering (SSR)
+### 1. Static UI Scaffold (2024 Redesign)
+
+The main page now features a static, modern UI scaffold:
+
+- **HeroSection**: Top hero area with headline, subheadline, and call-to-action buttons. (`app/components/HeroSection.tsx`)
+- **MainCard**: Main card container with three columns. (`app/components/MainCard.tsx`)
+  - **DestinationSidebar**: Vertical list of destination types. (`app/components/DestinationSidebar.tsx`)
+  - **QRInputPreview**: URL input and QR code preview. (`app/components/QRInputPreview.tsx`)
+  - **CustomizationPanel**: Pattern, color, and theme selectors. (`app/components/CustomizationPanel.tsx`)
+
+All components are styled with Tailwind CSS and follow Shadcn UI best practices. No functionality is implemented yet—this is a look-and-feel scaffold only.
+
+### 2. Server-Side Rendering (SSR)
 
 - Entry point: `app/ssr.tsx`
 - Handles initial server-side rendering
 - Integrates with TanStack Router for route management
 
-### 2. Client-Side Hydration
+### 3. Client-Side Hydration
 
 - Entry point: `app/client.tsx`
 - Hydrates the server-rendered HTML
 - Initializes client-side routing
 
-### 3. Routing
+### 4. Routing
 
 - File-based routing system
 - Root layout: `app/routes/__root.tsx`
 - Index route: `app/routes/index.tsx`
 - Router configuration: `app/router.tsx`
 
-### 4. Server Functions
-
-- Implemented using `createServerFn`
-- Example: Counter functionality in index route
-- Handles file system operations
-
 ## Styling & UI Components
 
-This project now uses **Tailwind CSS** for utility-first styling, with a custom theme defined in `app/styles/app.css`. The setup also includes:
+This project uses **Tailwind CSS** for utility-first styling, with a custom theme defined in `app/styles/app.css`. The setup also includes:
 
 - [shadcn/ui](https://ui.shadcn.com/) Button component (see `app/components/ui/button.tsx`)
 - Utility function for class name merging in `app/lib/utils.ts`
@@ -106,6 +117,7 @@ import { Button } from "@/components/ui/button";
 
 ## Features
 
+- Static UI scaffold for QR generator (2024 redesign)
 - Server-side rendering
 - File-based routing
 - Type-safe server functions
