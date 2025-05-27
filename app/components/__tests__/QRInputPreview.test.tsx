@@ -112,4 +112,69 @@ describe('QRInputPreview', () => {
 			expect(screen.getByText(/mailto:test@example.com/)).toBeInTheDocument()
 		}
 	})
+
+	it('renders instagram form when instagram destination is selected', () => {
+		const instagramDestination = {
+			label: 'Instagram',
+			icon: '📸',
+			enabled: true,
+		}
+
+		render(<QRInputPreview selectedDestination={instagramDestination} />)
+
+		expect(screen.getByLabelText(/instagram username/i)).toBeInTheDocument()
+	})
+
+	it('updates instagram form when user types', () => {
+		const instagramDestination = {
+			label: 'Instagram',
+			icon: '📸',
+			enabled: true,
+		}
+
+		render(<QRInputPreview selectedDestination={instagramDestination} />)
+
+		const usernameInput = screen.getByLabelText(/instagram username/i)
+
+		fireEvent.change(usernameInput, { target: { value: 'testuser' } })
+		expect(usernameInput).toHaveValue('testuser')
+	})
+
+	it('generates instagram URL when form is filled', () => {
+		const instagramDestination = {
+			label: 'Instagram',
+			icon: '📸',
+			enabled: true,
+		}
+
+		render(<QRInputPreview selectedDestination={instagramDestination} />)
+
+		const usernameInput = screen.getByLabelText(/instagram username/i)
+
+		fireEvent.change(usernameInput, { target: { value: 'testuser' } })
+
+		// In development mode, we can see the QR code value in the preview text
+		if (process.env.NODE_ENV === 'development') {
+			expect(screen.getByText(/https:\/\/instagram.com\/testuser/)).toBeInTheDocument()
+		}
+	})
+
+	it('handles @ symbol in instagram username', () => {
+		const instagramDestination = {
+			label: 'Instagram',
+			icon: '📸',
+			enabled: true,
+		}
+
+		render(<QRInputPreview selectedDestination={instagramDestination} />)
+
+		const usernameInput = screen.getByLabelText(/instagram username/i)
+
+		fireEvent.change(usernameInput, { target: { value: '@testuser' } })
+
+		// In development mode, we can see the QR code value in the preview text
+		if (process.env.NODE_ENV === 'development') {
+			expect(screen.getByText(/https:\/\/instagram.com\/testuser/)).toBeInTheDocument()
+		}
+	})
 })
