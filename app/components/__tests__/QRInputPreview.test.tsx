@@ -177,4 +177,94 @@ describe('QRInputPreview', () => {
 			expect(screen.getByText(/https:\/\/instagram.com\/testuser/)).toBeInTheDocument()
 		}
 	})
+
+	it('validates instagram username format', () => {
+		const instagramDestination = {
+			label: 'Instagram',
+			icon: '📸',
+			enabled: true,
+		}
+
+		render(<QRInputPreview selectedDestination={instagramDestination} />)
+
+		const usernameInput = screen.getByLabelText(/instagram username/i)
+
+		// Test invalid username with special characters
+		fireEvent.change(usernameInput, { target: { value: 'test@user' } })
+		expect(screen.getByText(/username must be 30 characters or less/i)).toBeInTheDocument()
+
+		// Test valid username
+		fireEvent.change(usernameInput, { target: { value: 'test.user_123' } })
+		expect(screen.queryByText(/username must be 30 characters or less/i)).not.toBeInTheDocument()
+	})
+
+	it('handles instagram post URL input', () => {
+		const instagramDestination = {
+			label: 'Instagram',
+			icon: '📸',
+			enabled: true,
+		}
+
+		render(<QRInputPreview selectedDestination={instagramDestination} />)
+
+		// Switch to post type
+		const contentTypeSelect = screen.getByLabelText(/content type/i)
+		fireEvent.change(contentTypeSelect, { target: { value: 'post' } })
+
+		const postUrlInput = screen.getByLabelText(/instagram post url/i)
+
+		// Test invalid URL
+		fireEvent.change(postUrlInput, { target: { value: 'invalid-url' } })
+		expect(screen.getByText(/please enter a valid instagram post or reel url/i)).toBeInTheDocument()
+
+		// Test valid URL
+		fireEvent.change(postUrlInput, { target: { value: 'https://instagram.com/p/abc123' } })
+		expect(screen.queryByText(/please enter a valid instagram post or reel url/i)).not.toBeInTheDocument()
+	})
+
+	it('handles instagram reel URL input', () => {
+		const instagramDestination = {
+			label: 'Instagram',
+			icon: '📸',
+			enabled: true,
+		}
+
+		render(<QRInputPreview selectedDestination={instagramDestination} />)
+
+		// Switch to reel type
+		const contentTypeSelect = screen.getByLabelText(/content type/i)
+		fireEvent.change(contentTypeSelect, { target: { value: 'reel' } })
+
+		const reelUrlInput = screen.getByLabelText(/instagram reel url/i)
+
+		// Test invalid URL
+		fireEvent.change(reelUrlInput, { target: { value: 'invalid-url' } })
+		expect(screen.getByText(/please enter a valid instagram post or reel url/i)).toBeInTheDocument()
+
+		// Test valid URL
+		fireEvent.change(reelUrlInput, { target: { value: 'https://instagram.com/reel/abc123' } })
+		expect(screen.queryByText(/please enter a valid instagram post or reel url/i)).not.toBeInTheDocument()
+	})
+
+	it('shows preview button for all content types', () => {
+		const instagramDestination = {
+			label: 'Instagram',
+			icon: '📸',
+			enabled: true,
+		}
+
+		render(<QRInputPreview selectedDestination={instagramDestination} />)
+
+		// Check profile preview button
+		expect(screen.getByText(/preview profile/i)).toBeInTheDocument()
+
+		// Switch to post type
+		const contentTypeSelect = screen.getByLabelText(/content type/i)
+		fireEvent.change(contentTypeSelect, { target: { value: 'post' } })
+		expect(screen.getByText(/preview post/i)).toBeInTheDocument()
+
+		// Switch to reel type
+		fireEvent.change(contentTypeSelect, { target: { value: 'reel' } })
+		expect(screen.getByText(/preview reel/i)).toBeInTheDocument()
+	})
 })
