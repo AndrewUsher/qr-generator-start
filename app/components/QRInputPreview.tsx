@@ -1,6 +1,9 @@
 import React from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import type { Destination } from './DestinationSidebar'
+import { EmailForm } from './forms/EmailForm'
+import { WebsiteForm } from './forms/WebsiteForm'
+import { MessageForm } from './forms/MessageForm'
 
 interface QRInputPreviewProps {
 	selectedDestination: Destination
@@ -86,127 +89,27 @@ export function QRInputPreview({ selectedDestination }: QRInputPreviewProps) {
 		}
 	}
 
-	const renderEmailForm = () => (
-		<div className="flex flex-col gap-4 w-full">
-			<div>
-				<label
-					htmlFor="email-address"
-					className="text-sm font-medium text-gray-700 self-start mb-1 block"
-				>
-					Email Address
-				</label>
-				<input
-					id="email-address"
-					type="email"
-					placeholder="recipient@example.com"
-					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
-					value={emailData.email}
-					onChange={handleEmailChange('email')}
-				/>
-			</div>
-			<div>
-				<label
-					htmlFor="email-subject"
-					className="text-sm font-medium text-gray-700 self-start mb-1 block"
-				>
-					Subject
-				</label>
-				<input
-					id="email-subject"
-					type="text"
-					placeholder="Email subject"
-					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
-					value={emailData.subject}
-					onChange={handleEmailChange('subject')}
-				/>
-			</div>
-			<div>
-				<label
-					htmlFor="email-message"
-					className="text-sm font-medium text-gray-700 self-start mb-1 block"
-				>
-					Message
-				</label>
-				<textarea
-					id="email-message"
-					placeholder="Your message here..."
-					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base min-h-[100px] resize-y"
-					value={emailData.message}
-					onChange={handleEmailChange('message')}
-				/>
-			</div>
-		</div>
-	)
-
-	const renderWebsiteForm = () => (
-		<div>
-			<label
-				htmlFor="website-url"
-				className="text-sm font-medium text-gray-700 self-start mb-1 block"
-			>
-				Enter your website URL
-			</label>
-			<input
-				id="website-url"
-				type="text"
-				placeholder="https://example.com"
-				className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
-				value={websiteUrl}
-				onChange={handleWebsiteChange}
-			/>
-		</div>
-	)
-
-	const renderMessageForm = () => (
-		<div className="flex flex-col gap-4 w-full">
-			<div>
-				<label
-					htmlFor="phone-number"
-					className="text-sm font-medium text-gray-700 self-start mb-1 block"
-				>
-					Phone Number
-				</label>
-				<input
-					id="phone-number"
-					type="tel"
-					placeholder="+1234567890"
-					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
-					value={phoneNumber}
-					onChange={handlePhoneChange}
-				/>
-			</div>
-			<div>
-				<label
-					htmlFor="message-text"
-					className="text-sm font-medium text-gray-700 self-start mb-1 block"
-				>
-					Message
-				</label>
-				<textarea
-					id="message-text"
-					placeholder="Type your message here..."
-					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base min-h-[150px] resize-y"
-					value={messageText}
-					onChange={handleMessageChange}
-				/>
-			</div>
-		</div>
-	)
-
 	const renderForm = () => {
 		if (!selectedDestination) {
-			return renderWebsiteForm()
+			return <WebsiteForm websiteUrl={websiteUrl} onWebsiteChange={handleWebsiteChange} />
 		}
 
 		switch (selectedDestination.label) {
 			case 'Email':
-				return renderEmailForm()
+				return <EmailForm emailData={emailData} onEmailChange={handleEmailChange} />
 			case 'Website':
-				return renderWebsiteForm()
+				return <WebsiteForm websiteUrl={websiteUrl} onWebsiteChange={handleWebsiteChange} />
 			case 'Message':
-				return renderMessageForm()
+				return (
+					<MessageForm
+						phoneNumber={phoneNumber}
+						messageText={messageText}
+						onPhoneChange={handlePhoneChange}
+						onMessageChange={handleMessageChange}
+					/>
+				)
 			default:
-				return renderWebsiteForm()
+				return <WebsiteForm websiteUrl={websiteUrl} onWebsiteChange={handleWebsiteChange} />
 		}
 	}
 
