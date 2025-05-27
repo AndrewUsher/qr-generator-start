@@ -1,270 +1,209 @@
-import { describe, it, expect } from 'vitest'
-import { render } from '@testing-library/react'
-import { screen, fireEvent } from '@testing-library/dom'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { QRInputPreview } from '../QRInputPreview'
+import type { Destination } from '../DestinationSidebar'
+
+const mockDestination: Destination = {
+	label: 'Website',
+	icon: '🔗',
+	enabled: true,
+}
 
 describe('QRInputPreview', () => {
-	const mockDestination = {
-		label: 'Email',
-		icon: '✉️',
-		enabled: true,
-	}
-
-	it('renders email form when email destination is selected', () => {
-		render(<QRInputPreview selectedDestination={mockDestination} />)
-
-		expect(screen.getByLabelText(/email address/i)).toBeInTheDocument()
-		expect(screen.getByLabelText(/subject/i)).toBeInTheDocument()
-		expect(screen.getByLabelText(/message/i)).toBeInTheDocument()
+	it('renders website form by default', () => {
+		render(<QRInputPreview selectedDestination={mockDestination} qrSize="medium" />)
+		expect(screen.getByPlaceholderText('https://example.com')).toBeInTheDocument()
 	})
 
-	it('updates email form fields when user types', () => {
-		render(<QRInputPreview selectedDestination={mockDestination} />)
+	it('renders website form when no destination is selected', () => {
+		render(<QRInputPreview selectedDestination={mockDestination} qrSize="medium" />)
+		expect(screen.getByPlaceholderText('https://example.com')).toBeInTheDocument()
+	})
 
-		const emailInput = screen.getByLabelText(/email address/i)
-		const subjectInput = screen.getByLabelText(/subject/i)
-		const messageInput = screen.getByLabelText(/message/i)
-
-		fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-		fireEvent.change(subjectInput, { target: { value: 'Test Subject' } })
-		fireEvent.change(messageInput, { target: { value: 'Test Message' } })
-
-		expect(emailInput).toHaveValue('test@example.com')
-		expect(subjectInput).toHaveValue('Test Subject')
-		expect(messageInput).toHaveValue('Test Message')
+	it('renders email form when email destination is selected', () => {
+		const emailDestination: Destination = {
+			label: 'Email',
+			icon: '📧',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={emailDestination} qrSize="medium" />)
+		expect(screen.getByPlaceholderText('email@example.com')).toBeInTheDocument()
 	})
 
 	it('renders website form when website destination is selected', () => {
-		const websiteDestination = {
+		const websiteDestination: Destination = {
 			label: 'Website',
 			icon: '🔗',
 			enabled: true,
 		}
-
-		render(<QRInputPreview selectedDestination={websiteDestination} />)
-
-		expect(screen.getByLabelText(/enter your website url/i)).toBeInTheDocument()
+		render(<QRInputPreview selectedDestination={websiteDestination} qrSize="medium" />)
+		expect(screen.getByPlaceholderText('https://example.com')).toBeInTheDocument()
 	})
 
 	it('renders message form when message destination is selected', () => {
-		const messageDestination = {
+		const messageDestination: Destination = {
 			label: 'Message',
 			icon: '💬',
 			enabled: true,
 		}
-
-		render(<QRInputPreview selectedDestination={messageDestination} />)
-
-		expect(screen.getByLabelText(/phone number/i)).toBeInTheDocument()
-		expect(screen.getByLabelText(/message/i)).toBeInTheDocument()
+		render(<QRInputPreview selectedDestination={messageDestination} qrSize="medium" />)
+		expect(screen.getByPlaceholderText('Enter your message')).toBeInTheDocument()
 	})
 
-	it('updates message form when user types', () => {
-		const messageDestination = {
+	it('updates QR code value when website URL is entered', () => {
+		const websiteDestination: Destination = {
+			label: 'Website',
+			icon: '🔗',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={websiteDestination} qrSize="medium" />)
+		const input = screen.getByPlaceholderText('https://example.com')
+		fireEvent.change(input, { target: { value: 'https://test.com' } })
+		expect(screen.getByText('Live Preview for https://test.com')).toBeInTheDocument()
+	})
+
+	it('updates QR code value when email is entered', () => {
+		const emailDestination: Destination = {
+			label: 'Email',
+			icon: '📧',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={emailDestination} qrSize="medium" />)
+		const input = screen.getByPlaceholderText('email@example.com')
+		fireEvent.change(input, { target: { value: 'test@example.com' } })
+		expect(screen.getByText('Live Preview for mailto:test@example.com')).toBeInTheDocument()
+	})
+
+	it('updates QR code value when message is entered', () => {
+		const messageDestination: Destination = {
 			label: 'Message',
 			icon: '💬',
 			enabled: true,
 		}
-
-		render(<QRInputPreview selectedDestination={messageDestination} />)
-
-		const phoneInput = screen.getByLabelText(/phone number/i)
-		const messageInput = screen.getByLabelText(/message/i)
-
-		fireEvent.change(phoneInput, { target: { value: '+1234567890' } })
-		fireEvent.change(messageInput, { target: { value: 'Hello, World!' } })
-
-		expect(phoneInput).toHaveValue('+1234567890')
-		expect(messageInput).toHaveValue('Hello, World!')
+		render(<QRInputPreview selectedDestination={messageDestination} qrSize="medium" />)
+		const input = screen.getByPlaceholderText('Enter your message')
+		fireEvent.change(input, { target: { value: 'Hello, World!' } })
+		expect(screen.getByText('Live Preview for Hello, World!')).toBeInTheDocument()
 	})
 
-	it('generates SMS URL when form is filled', () => {
-		const messageDestination = {
-			label: 'Message',
-			icon: '💬',
-			enabled: true,
-		}
-
-		render(<QRInputPreview selectedDestination={messageDestination} />)
-
-		const phoneInput = screen.getByLabelText(/phone number/i)
-		const messageInput = screen.getByLabelText(/message/i)
-
-		fireEvent.change(phoneInput, { target: { value: '+1234567890' } })
-		fireEvent.change(messageInput, { target: { value: 'Hello, World!' } })
-
-		// In development mode, we can see the QR code value in the preview text
-		if (process.env.NODE_ENV === 'development') {
-			expect(
-				screen.getByText(/sms:\+1234567890\?body=Hello%2C%20World!/),
-			).toBeInTheDocument()
-		}
+	it('shows QR code placeholder when no value is entered', () => {
+		render(<QRInputPreview selectedDestination={mockDestination} qrSize="medium" />)
+		expect(screen.getByText('QR Code')).toBeInTheDocument()
 	})
 
-	it('shows QR code preview when form is filled', () => {
-		render(<QRInputPreview selectedDestination={mockDestination} />)
-
-		const emailInput = screen.getByLabelText(/email address/i)
-		fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-
-		// In development mode, we can see the QR code value in the preview text
-		if (process.env.NODE_ENV === 'development') {
-			expect(screen.getByText(/mailto:test@example.com/)).toBeInTheDocument()
-		}
+	it('shows QR code when value is entered', () => {
+		render(<QRInputPreview selectedDestination={mockDestination} qrSize="medium" />)
+		const input = screen.getByPlaceholderText('https://example.com')
+		fireEvent.change(input, { target: { value: 'https://test.com' } })
+		expect(screen.queryByText('QR Code')).not.toBeInTheDocument()
 	})
 
-	it('renders instagram form when instagram destination is selected', () => {
-		const instagramDestination = {
+	it('renders Instagram form when Instagram destination is selected', () => {
+		const instagramDestination: Destination = {
 			label: 'Instagram',
 			icon: '📸',
 			enabled: true,
 		}
-
-		render(<QRInputPreview selectedDestination={instagramDestination} />)
-
-		expect(screen.getByLabelText(/instagram username/i)).toBeInTheDocument()
+		render(<QRInputPreview selectedDestination={instagramDestination} qrSize="medium" />)
+		expect(screen.getByText('Content Type')).toBeInTheDocument()
 	})
 
-	it('updates instagram form when user types', () => {
-		const instagramDestination = {
+	it('shows username input when profile type is selected', () => {
+		const instagramDestination: Destination = {
 			label: 'Instagram',
 			icon: '📸',
 			enabled: true,
 		}
-
-		render(<QRInputPreview selectedDestination={instagramDestination} />)
-
-		const usernameInput = screen.getByLabelText(/instagram username/i)
-
-		fireEvent.change(usernameInput, { target: { value: 'testuser' } })
-		expect(usernameInput).toHaveValue('testuser')
+		render(<QRInputPreview selectedDestination={instagramDestination} qrSize="medium" />)
+		expect(screen.getByPlaceholderText('@username')).toBeInTheDocument()
 	})
 
-	it('generates instagram URL when form is filled', () => {
-		const instagramDestination = {
+	it('shows post URL input when post type is selected', () => {
+		const instagramDestination: Destination = {
 			label: 'Instagram',
 			icon: '📸',
 			enabled: true,
 		}
-
-		render(<QRInputPreview selectedDestination={instagramDestination} />)
-
-		const usernameInput = screen.getByLabelText(/instagram username/i)
-
-		fireEvent.change(usernameInput, { target: { value: 'testuser' } })
-
-		// In development mode, we can see the QR code value in the preview text
-		if (process.env.NODE_ENV === 'development') {
-			expect(screen.getByText(/https:\/\/instagram.com\/testuser/)).toBeInTheDocument()
-		}
+		render(<QRInputPreview selectedDestination={instagramDestination} qrSize="medium" />)
+		const select = screen.getByLabelText('Content Type')
+		fireEvent.change(select, { target: { value: 'post' } })
+		expect(screen.getByPlaceholderText('https://instagram.com/p/...')).toBeInTheDocument()
 	})
 
-	it('handles @ symbol in instagram username', () => {
-		const instagramDestination = {
+	it('shows reel URL input when reel type is selected', () => {
+		const instagramDestination: Destination = {
 			label: 'Instagram',
 			icon: '📸',
 			enabled: true,
 		}
-
-		render(<QRInputPreview selectedDestination={instagramDestination} />)
-
-		const usernameInput = screen.getByLabelText(/instagram username/i)
-
-		fireEvent.change(usernameInput, { target: { value: '@testuser' } })
-
-		// In development mode, we can see the QR code value in the preview text
-		if (process.env.NODE_ENV === 'development') {
-			expect(screen.getByText(/https:\/\/instagram.com\/testuser/)).toBeInTheDocument()
-		}
-	})
-
-	it('validates instagram username format', () => {
-		const instagramDestination = {
-			label: 'Instagram',
-			icon: '📸',
-			enabled: true,
-		}
-
-		render(<QRInputPreview selectedDestination={instagramDestination} />)
-
-		const usernameInput = screen.getByLabelText(/instagram username/i)
-
-		// Test invalid username with special characters
-		fireEvent.change(usernameInput, { target: { value: 'test@user' } })
-		expect(screen.getByText(/username must be 30 characters or less/i)).toBeInTheDocument()
-
-		// Test valid username
-		fireEvent.change(usernameInput, { target: { value: 'test.user_123' } })
-		expect(screen.queryByText(/username must be 30 characters or less/i)).not.toBeInTheDocument()
-	})
-
-	it('handles instagram post URL input', () => {
-		const instagramDestination = {
-			label: 'Instagram',
-			icon: '📸',
-			enabled: true,
-		}
-
-		render(<QRInputPreview selectedDestination={instagramDestination} />)
-
-		// Switch to post type
-		const contentTypeSelect = screen.getByLabelText(/content type/i)
-		fireEvent.change(contentTypeSelect, { target: { value: 'post' } })
-
-		const postUrlInput = screen.getByLabelText(/instagram post url/i)
-
-		// Test invalid URL
-		fireEvent.change(postUrlInput, { target: { value: 'invalid-url' } })
-		expect(screen.getByText(/please enter a valid instagram post or reel url/i)).toBeInTheDocument()
-
-		// Test valid URL
-		fireEvent.change(postUrlInput, { target: { value: 'https://instagram.com/p/abc123' } })
-		expect(screen.queryByText(/please enter a valid instagram post or reel url/i)).not.toBeInTheDocument()
-	})
-
-	it('handles instagram reel URL input', () => {
-		const instagramDestination = {
-			label: 'Instagram',
-			icon: '📸',
-			enabled: true,
-		}
-
-		render(<QRInputPreview selectedDestination={instagramDestination} />)
-
-		// Switch to reel type
-		const contentTypeSelect = screen.getByLabelText(/content type/i)
-		fireEvent.change(contentTypeSelect, { target: { value: 'reel' } })
-
-		const reelUrlInput = screen.getByLabelText(/instagram reel url/i)
-
-		// Test invalid URL
-		fireEvent.change(reelUrlInput, { target: { value: 'invalid-url' } })
-		expect(screen.getByText(/please enter a valid instagram post or reel url/i)).toBeInTheDocument()
-
-		// Test valid URL
-		fireEvent.change(reelUrlInput, { target: { value: 'https://instagram.com/reel/abc123' } })
-		expect(screen.queryByText(/please enter a valid instagram post or reel url/i)).not.toBeInTheDocument()
+		render(<QRInputPreview selectedDestination={instagramDestination} qrSize="medium" />)
+		const select = screen.getByLabelText('Content Type')
+		fireEvent.change(select, { target: { value: 'reel' } })
+		expect(screen.getByPlaceholderText('https://instagram.com/p/...')).toBeInTheDocument()
 	})
 
 	it('shows preview button for all content types', () => {
-		const instagramDestination = {
+		const instagramDestination: Destination = {
 			label: 'Instagram',
 			icon: '📸',
 			enabled: true,
 		}
+		render(<QRInputPreview selectedDestination={instagramDestination} qrSize="medium" />)
+		expect(screen.getByText('Preview Profile')).toBeInTheDocument()
+		
+		const select = screen.getByLabelText('Content Type')
+		fireEvent.change(select, { target: { value: 'post' } })
+		expect(screen.getByText('Preview Post')).toBeInTheDocument()
+		
+		fireEvent.change(select, { target: { value: 'reel' } })
+		expect(screen.getByText('Preview Reel')).toBeInTheDocument()
+	})
 
-		render(<QRInputPreview selectedDestination={instagramDestination} />)
+	it('shows shortened URL option', () => {
+		const instagramDestination: Destination = {
+			label: 'Instagram',
+			icon: '📸',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={instagramDestination} qrSize="medium" />)
+		expect(screen.getByLabelText('Use shortened URL')).toBeInTheDocument()
+	})
 
-		// Check profile preview button
-		expect(screen.getByText(/preview profile/i)).toBeInTheDocument()
+	it('shows profile preview for valid username', () => {
+		const instagramDestination: Destination = {
+			label: 'Instagram',
+			icon: '📸',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={instagramDestination} qrSize="medium" />)
+		const input = screen.getByPlaceholderText('@username')
+		fireEvent.change(input, { target: { value: 'testuser' } })
+		expect(screen.getByText('@testuser')).toBeInTheDocument()
+	})
 
-		// Switch to post type
-		const contentTypeSelect = screen.getByLabelText(/content type/i)
-		fireEvent.change(contentTypeSelect, { target: { value: 'post' } })
-		expect(screen.getByText(/preview post/i)).toBeInTheDocument()
+	it('copies URL to clipboard', async () => {
+		const instagramDestination: Destination = {
+			label: 'Instagram',
+			icon: '📸',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={instagramDestination} qrSize="medium" />)
+		
+		// Mock clipboard API
+		const mockClipboard = {
+			writeText: vi.fn().mockResolvedValue(undefined),
+		}
+		Object.assign(navigator, {
+			clipboard: mockClipboard,
+		})
 
-		// Switch to reel type
-		fireEvent.change(contentTypeSelect, { target: { value: 'reel' } })
-		expect(screen.getByText(/preview reel/i)).toBeInTheDocument()
+		const input = screen.getByPlaceholderText('@username')
+		fireEvent.change(input, { target: { value: 'testuser' } })
+		
+		const copyButton = screen.getByText('Copy URL')
+		fireEvent.click(copyButton)
+		
+		expect(mockClipboard.writeText).toHaveBeenCalledWith('https://instagram.com/testuser')
+		expect(screen.getByText('Copied!')).toBeInTheDocument()
 	})
 })

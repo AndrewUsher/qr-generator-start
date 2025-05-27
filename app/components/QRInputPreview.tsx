@@ -6,12 +6,44 @@ import { WebsiteForm } from './forms/WebsiteForm'
 import { MessageForm } from './forms/MessageForm'
 import { InstagramForm } from './forms/InstagramForm'
 
+type QRSize = 'small' | 'medium' | 'large'
+
 interface QRInputPreviewProps {
 	selectedDestination: Destination
+	qrSize: QRSize
 }
 
-export function QRInputPreview({ selectedDestination }: QRInputPreviewProps) {
+export function QRInputPreview({
+	selectedDestination,
+	qrSize,
+}: QRInputPreviewProps) {
 	const [qrValue, setQrValue] = React.useState('')
+
+	const getQRCodeSize = () => {
+		switch (qrSize) {
+			case 'small':
+				return 150
+			case 'medium':
+				return 200
+			case 'large':
+				return 250
+			default:
+				return 200
+		}
+	}
+
+	const getContainerSize = () => {
+		switch (qrSize) {
+			case 'small':
+				return 'w-40 h-40'
+			case 'medium':
+				return 'w-56 h-56'
+			case 'large':
+				return 'w-72 h-72'
+			default:
+				return 'w-56 h-56'
+		}
+	}
 
 	const renderForm = () => {
 		if (!selectedDestination) {
@@ -40,11 +72,13 @@ export function QRInputPreview({ selectedDestination }: QRInputPreviewProps) {
 					? `Live Preview for ${qrValue}`
 					: 'Preview'}
 			</span>
-			<div className="w-56 h-56 bg-white rounded-lg flex items-center justify-center p-4">
+			<div
+				className={`${getContainerSize()} bg-white rounded-lg flex items-center justify-center p-4`}
+			>
 				{qrValue ? (
 					<QRCodeSVG
 						value={qrValue}
-						size={200}
+						size={getQRCodeSize()}
 						level="H"
 						includeMargin={false}
 						className="w-full h-full"
