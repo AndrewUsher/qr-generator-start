@@ -14,11 +14,19 @@ graph TD
     A --> C[client.tsx]
     A --> D[router.tsx]
     A --> E[ssr.tsx]
-    B --> F[__root.tsx]
-    B --> G[index.tsx]
-    H[app.config.ts]
-    I[tsconfig.json]
-    J[package.json]
+    A --> F[styles/]
+    A --> G[components/]
+    F --> H[app.css]
+    G --> I[ui/]
+    I --> J[button.tsx]
+    G --> K[lib/]
+    K --> L[utils.ts]
+    B --> M[__root.tsx]
+    B --> N[index.tsx]
+    O[app.config.ts]
+    P[tsconfig.json]
+    Q[package.json]
+    R[postcss.config.ts]
 ```
 
 ### Application Flow
@@ -70,10 +78,44 @@ sequenceDiagram
 - Example: Counter functionality in index route
 - Handles file system operations
 
+## Styling & UI Components
+
+This project now uses **Tailwind CSS** for utility-first styling, with a custom theme defined in `app/styles/app.css`. The setup also includes:
+
+- [shadcn/ui](https://ui.shadcn.com/) Button component (see `app/components/ui/button.tsx`)
+- Utility function for class name merging in `app/lib/utils.ts`
+- [class-variance-authority](https://cva.style/), [clsx](https://github.com/lukeed/clsx), and [tailwind-merge](https://tailwind-merge.vercel.app/) for advanced class management
+- [Radix UI Slot](https://www.radix-ui.com/primitives/docs/components/slot) for polymorphic components
+- [Lucide React](https://lucide.dev/) for icons (future use)
+
+### Adding Styles
+
+- Global styles and theme variables are in `app/styles/app.css` (imported in the root layout).
+- Use Tailwind utility classes in your components for rapid styling.
+- For custom UI elements, use or extend the components in `app/components/ui/`.
+
+### Example: Using the Button Component
+
+```tsx
+import { Button } from "@/components/ui/button";
+
+<Button variant="outline" size="lg">
+  Click me
+</Button>;
+```
+
+## Features
+
+- Server-side rendering
+- File-based routing
+- Type-safe server functions
+- Hot module replacement
+- Production-ready build system
+
 ## Development
 
 ```bash
-# Install dependencies
+# Install dependencies (now includes Tailwind, shadcn/ui, etc.)
 npm install
 
 # Start development server
@@ -91,13 +133,7 @@ npm start
 - **Framework**: TanStack Start
 - **Routing**: TanStack Router
 - **Language**: TypeScript
+- **Styling**: Tailwind CSS, shadcn/ui, class-variance-authority, clsx, tailwind-merge
+- **UI Primitives**: Radix UI, Lucide React
 - **Build Tool**: Vinxi
 - **Runtime**: Node.js
-
-## Features
-
-- Server-side rendering
-- File-based routing
-- Type-safe server functions
-- Hot module replacement
-- Production-ready build system
