@@ -1,6 +1,12 @@
-import React from 'react';
+import React from 'react'
 
-const destinations = [
+export type Destination = {
+	label: string
+	icon: string
+	enabled: boolean
+}
+
+const destinations: Destination[] = [
 	{ label: 'Website', icon: '🔗', enabled: true },
 	{ label: 'Google Doc', icon: '📄', enabled: false },
 	{ label: 'Youtube', icon: '▶️', enabled: false },
@@ -8,24 +14,40 @@ const destinations = [
 	{ label: 'Upload a File', icon: '📁', enabled: false },
 	{ label: 'Instagram', icon: '📸', enabled: false },
 	{ label: 'Message', icon: '💬', enabled: false },
-	{ label: 'Email', icon: '✉️', enabled: false },
-];
+	{ label: 'Email', icon: '✉️', enabled: true },
+]
 
-export function DestinationSidebar() {
+interface DestinationSidebarProps {
+	selectedDestination: Destination
+	onDestinationSelect: (destination: Destination) => void
+}
+
+export function DestinationSidebar({
+	selectedDestination,
+	onDestinationSelect,
+}: DestinationSidebarProps) {
 	return (
 		<aside className="flex flex-col gap-2">
 			{destinations.map((dest) => (
 				<button
+					type="button"
 					key={dest.label}
 					className={`flex items-center gap-3 px-4 py-2 rounded-lg text-left font-medium transition-colors
-            ${dest.enabled ? 'bg-blue-50 text-blue-700 hover:bg-blue-100' : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-60'}`}
+            ${
+							dest.enabled
+								? selectedDestination.label === dest.label
+									? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+									: 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+								: 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-60'
+						}`}
 					disabled={!dest.enabled}
-					aria-selected={dest.enabled}
+					onClick={() => dest.enabled && onDestinationSelect(dest)}
+					aria-selected={selectedDestination.label === dest.label}
 				>
 					<span className="text-xl">{dest.icon}</span>
 					{dest.label}
 				</button>
 			))}
 		</aside>
-	);
+	)
 }

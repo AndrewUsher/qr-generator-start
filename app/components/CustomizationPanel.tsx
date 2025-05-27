@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export function CustomizationPanel() {
 	return (
@@ -46,5 +46,5 @@ export function CustomizationPanel() {
 				</div>
 			</div>
 		</div>
-	);
+	)
 }

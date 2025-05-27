@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import React from 'react'
+import { Button } from '@/components/ui/button'
 
 export function HeroSection() {
 	return (
@@ -34,5 +34,5 @@ export function HeroSection() {
 				{/* TODO: Add SVG arrow illustration here */}
 			</div>
 		</section>
-	);
+	)
 }
