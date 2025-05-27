@@ -306,4 +306,68 @@ describe('QRInputPreview', () => {
 		
 		alertMock.mockRestore()
 	})
+
+	it('shows direct encoding status for small files', async () => {
+		const fileDestination: Destination = {
+			label: 'File',
+			icon: '📁',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={fileDestination} qrSize="medium" />)
+		
+		const smallFile = new File(['test'], 'test.txt', { type: 'text/plain' })
+		const input = screen.getByLabelText(/Click to upload/)
+		
+		Object.defineProperty(input, 'files', {
+			value: [smallFile],
+		})
+		
+		fireEvent.change(input)
+		
+		expect(screen.getByText('File will be encoded directly in QR code')).toBeInTheDocument()
+	})
+
+	it('shows external encoding status for large files', () => {
+		const fileDestination: Destination = {
+			label: 'File',
+			icon: '📁',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={fileDestination} qrSize="medium" />)
+		
+		const largeFile = new File(['x'.repeat(2000)], 'large.txt', { type: 'text/plain' })
+		const input = screen.getByLabelText(/Click to upload/)
+		
+		Object.defineProperty(input, 'files', {
+			value: [largeFile],
+		})
+		
+		fireEvent.change(input)
+		
+		expect(screen.getByText('File is too large for direct encoding')).toBeInTheDocument()
+	})
+
+	it('clears encoding status when file is removed', () => {
+		const fileDestination: Destination = {
+			label: 'File',
+			icon: '📁',
+			enabled: true,
+		}
+		render(<QRInputPreview selectedDestination={fileDestination} qrSize="medium" />)
+		
+		const file = new File(['test'], 'test.txt', { type: 'text/plain' })
+		const input = screen.getByLabelText(/Click to upload/)
+		
+		Object.defineProperty(input, 'files', {
+			value: [file],
+		})
+		
+		fireEvent.change(input)
+		
+		const removeButton = screen.getByLabelText('Remove file')
+		fireEvent.click(removeButton)
+		
+		expect(screen.queryByText('File will be encoded directly in QR code')).not.toBeInTheDocument()
+		expect(screen.queryByText('File is too large for direct encoding')).not.toBeInTheDocument()
+	})
 })

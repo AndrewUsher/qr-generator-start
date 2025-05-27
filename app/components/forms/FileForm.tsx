@@ -1,16 +1,19 @@
 import React from 'react'
-import { Upload, X } from 'lucide-react'
+import { Upload, X, AlertCircle } from 'lucide-react'
 
 interface FileFormProps {
 	onValueChange: (value: string) => void
 }
 
+const MAX_DIRECT_ENCODE_SIZE = 1500 // bytes, leaving some margin for QR code overhead
+
 export function FileForm({ onValueChange }: FileFormProps) {
 	const [file, setFile] = React.useState<File | null>(null)
 	const [preview, setPreview] = React.useState<string | null>(null)
+	const [encodingStatus, setEncodingStatus] = React.useState<'direct' | 'external' | null>(null)
 	const fileInputRef = React.useRef<HTMLInputElement>(null)
 
-	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const selectedFile = event.target.files?.[0]
 		if (!selectedFile) return
 
@@ -22,16 +25,39 @@ export function FileForm({ onValueChange }: FileFormProps) {
 
 		setFile(selectedFile)
 
-		// Create preview URL for images
-		if (selectedFile.type.startsWith('image/')) {
-			const url = URL.createObjectURL(selectedFile)
-			setPreview(url)
-			onValueChange(url)
+		// Check if we can encode directly
+		if (selectedFile.size <= MAX_DIRECT_ENCODE_SIZE) {
+			try {
+				const dataUrl = await readFileAsDataURL(selectedFile)
+				setPreview(dataUrl)
+				onValueChange(dataUrl)
+				setEncodingStatus('direct')
+			} catch (error) {
+				console.error('Error reading file:', error)
+				setEncodingStatus('external')
+			}
 		} else {
-			// For non-image files, we'll use a placeholder
-			setPreview(null)
-			onValueChange(selectedFile.name)
+			// For larger files, create preview URL for images
+			if (selectedFile.type.startsWith('image/')) {
+				const url = URL.createObjectURL(selectedFile)
+				setPreview(url)
+				onValueChange(url)
+			} else {
+				// For non-image files, we'll use a placeholder
+				setPreview(null)
+				onValueChange(selectedFile.name)
+			}
+			setEncodingStatus('external')
 		}
+	}
+
+	const readFileAsDataURL = (file: File): Promise<string> => {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader()
+			reader.onload = () => resolve(reader.result as string)
+			reader.onerror = reject
+			reader.readAsDataURL(file)
+		})
 	}
 
 	const handleRemoveFile = () => {
@@ -40,6 +66,7 @@ export function FileForm({ onValueChange }: FileFormProps) {
 		}
 		setFile(null)
 		setPreview(null)
+		setEncodingStatus(null)
 		onValueChange('')
 		if (fileInputRef.current) {
 			fileInputRef.current.value = ''
@@ -102,6 +129,21 @@ export function FileForm({ onValueChange }: FileFormProps) {
 					>
 						<X className="w-5 h-5" />
 					</button>
+				</div>
+			)}
+
+			{encodingStatus && (
+				<div className={`flex items-center gap-2 p-3 rounded-lg ${
+					encodingStatus === 'direct' 
+						? 'bg-green-50 text-green-700' 
+						: 'bg-yellow-50 text-yellow-700'
+				}`}>
+					<AlertCircle className="w-5 h-5" />
+					<p className="text-sm">
+						{encodingStatus === 'direct'
+							? 'File will be encoded directly in QR code'
+							: 'File is too large for direct encoding'}
+					</p>
 				</div>
 			)}
 		</div>
