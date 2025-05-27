@@ -1,6 +1,7 @@
 import * as fs from 'node:fs'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
+import { Button } from '@/components/ui/button'
 
 const filePath = 'count.txt'
 
@@ -36,21 +37,17 @@ function Home() {
     <div style={{ padding: '2rem', textAlign: 'center' }}>
       <h1>Welcome to QR Generator</h1>
       <p>This is a simple counter example to demonstrate server functions:</p>
-      <button
-        type="button"
+      <Button
+      variant="outline"
         onClick={() => {
           updateCount({ data: 1 }).then(() => {
             router.invalidate()
           })
         }}
-        style={{
-          padding: '0.5rem 1rem',
-          fontSize: '1.1rem',
-          cursor: 'pointer',
-        }}
+
       >
         Add 1 to {state}
-      </button>
+      </Button>
     </div>
   )
 } 
