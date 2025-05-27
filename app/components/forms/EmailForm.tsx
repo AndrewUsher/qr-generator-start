@@ -1,13 +1,52 @@
+import React from 'react'
+
 interface EmailFormProps {
-  emailData: {
-    email: string
-    subject: string
-    message: string
-  }
-  onEmailChange: (field: 'email' | 'subject' | 'message') => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  onValueChange: (value: string) => void
 }
 
-export function EmailForm({ emailData, onEmailChange }: EmailFormProps) {
+export function EmailForm({ onValueChange }: EmailFormProps) {
+  const [emailData, setEmailData] = React.useState({
+    email: '',
+    subject: '',
+    message: '',
+  })
+
+  const handleEmailChange =
+    (field: keyof typeof emailData) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const newValue = e.target.value
+      setEmailData((prev) => {
+        const newData = {
+          ...prev,
+          [field]: newValue,
+        }
+        generateEmailUrl(newData)
+        return newData
+      })
+    }
+
+  const generateEmailUrl = (data: typeof emailData) => {
+    const { email, subject, message } = data
+    if (!email) {
+      onValueChange('')
+      return
+    }
+
+    const params: string[] = []
+    if (subject) {
+      params.push(
+        `subject=${encodeURIComponent(subject).replace(/\+/g, '%20')}`,
+      )
+    }
+    if (message) {
+      params.push(`body=${encodeURIComponent(message).replace(/\+/g, '%20')}`)
+    }
+
+    const queryString = params.join('&')
+    const url = `mailto:${email}${queryString ? `?${queryString}` : ''}`
+    onValueChange(url)
+  }
+
   return (
     <div className="flex flex-col gap-4 w-full">
       <div>
@@ -23,7 +62,7 @@ export function EmailForm({ emailData, onEmailChange }: EmailFormProps) {
           placeholder="recipient@example.com"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
           value={emailData.email}
-          onChange={onEmailChange('email')}
+          onChange={handleEmailChange('email')}
         />
       </div>
       <div>
@@ -39,7 +78,7 @@ export function EmailForm({ emailData, onEmailChange }: EmailFormProps) {
           placeholder="Email subject"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
           value={emailData.subject}
-          onChange={onEmailChange('subject')}
+          onChange={handleEmailChange('subject')}
         />
       </div>
       <div>
@@ -54,7 +93,7 @@ export function EmailForm({ emailData, onEmailChange }: EmailFormProps) {
           placeholder="Your message here..."
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base min-h-[100px] resize-y"
           value={emailData.message}
-          onChange={onEmailChange('message')}
+          onChange={handleEmailChange('message')}
         />
       </div>
     </div>
