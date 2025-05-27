@@ -15,6 +15,8 @@ export function QRInputPreview({ selectedDestination }: QRInputPreviewProps) {
 	})
 
 	const [websiteUrl, setWebsiteUrl] = React.useState('')
+	const [messageText, setMessageText] = React.useState('')
+	const [phoneNumber, setPhoneNumber] = React.useState('')
 
 	const handleEmailChange =
 		(field: keyof typeof emailData) =>
@@ -27,6 +29,14 @@ export function QRInputPreview({ selectedDestination }: QRInputPreviewProps) {
 
 	const handleWebsiteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setWebsiteUrl(e.target.value)
+	}
+
+	const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+		setMessageText(e.target.value)
+	}
+
+	const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setPhoneNumber(e.target.value)
 	}
 
 	const generateEmailUrl = () => {
@@ -47,6 +57,20 @@ export function QRInputPreview({ selectedDestination }: QRInputPreviewProps) {
 		return `mailto:${email}${queryString ? `?${queryString}` : ''}`
 	}
 
+	const generateSmsUrl = () => {
+		if (!phoneNumber) return ''
+
+		const params: string[] = []
+		if (messageText) {
+			params.push(
+				`body=${encodeURIComponent(messageText).replace(/\+/g, '%20')}`,
+			)
+		}
+
+		const queryString = params.join('&')
+		return `sms:${phoneNumber}${queryString ? `?${queryString}` : ''}`
+	}
+
 	const getQRCodeValue = () => {
 		if (!selectedDestination) return ''
 
@@ -55,6 +79,8 @@ export function QRInputPreview({ selectedDestination }: QRInputPreviewProps) {
 				return generateEmailUrl()
 			case 'Website':
 				return websiteUrl
+			case 'Message':
+				return generateSmsUrl()
 			default:
 				return ''
 		}
@@ -131,6 +157,42 @@ export function QRInputPreview({ selectedDestination }: QRInputPreviewProps) {
 		</div>
 	)
 
+	const renderMessageForm = () => (
+		<div className="flex flex-col gap-4 w-full">
+			<div>
+				<label
+					htmlFor="phone-number"
+					className="text-sm font-medium text-gray-700 self-start mb-1 block"
+				>
+					Phone Number
+				</label>
+				<input
+					id="phone-number"
+					type="tel"
+					placeholder="+1234567890"
+					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base"
+					value={phoneNumber}
+					onChange={handlePhoneChange}
+				/>
+			</div>
+			<div>
+				<label
+					htmlFor="message-text"
+					className="text-sm font-medium text-gray-700 self-start mb-1 block"
+				>
+					Message
+				</label>
+				<textarea
+					id="message-text"
+					placeholder="Type your message here..."
+					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base min-h-[150px] resize-y"
+					value={messageText}
+					onChange={handleMessageChange}
+				/>
+			</div>
+		</div>
+	)
+
 	const renderForm = () => {
 		if (!selectedDestination) {
 			return renderWebsiteForm()
@@ -141,6 +203,8 @@ export function QRInputPreview({ selectedDestination }: QRInputPreviewProps) {
 				return renderEmailForm()
 			case 'Website':
 				return renderWebsiteForm()
+			case 'Message':
+				return renderMessageForm()
 			default:
 				return renderWebsiteForm()
 		}

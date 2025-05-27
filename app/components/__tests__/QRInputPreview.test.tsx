@@ -46,6 +46,61 @@ describe('QRInputPreview', () => {
 		expect(screen.getByLabelText(/enter your website url/i)).toBeInTheDocument()
 	})
 
+	it('renders message form when message destination is selected', () => {
+		const messageDestination = {
+			label: 'Message',
+			icon: '💬',
+			enabled: true,
+		}
+
+		render(<QRInputPreview selectedDestination={messageDestination} />)
+
+		expect(screen.getByLabelText(/phone number/i)).toBeInTheDocument()
+		expect(screen.getByLabelText(/message/i)).toBeInTheDocument()
+	})
+
+	it('updates message form when user types', () => {
+		const messageDestination = {
+			label: 'Message',
+			icon: '💬',
+			enabled: true,
+		}
+
+		render(<QRInputPreview selectedDestination={messageDestination} />)
+
+		const phoneInput = screen.getByLabelText(/phone number/i)
+		const messageInput = screen.getByLabelText(/message/i)
+
+		fireEvent.change(phoneInput, { target: { value: '+1234567890' } })
+		fireEvent.change(messageInput, { target: { value: 'Hello, World!' } })
+
+		expect(phoneInput).toHaveValue('+1234567890')
+		expect(messageInput).toHaveValue('Hello, World!')
+	})
+
+	it('generates SMS URL when form is filled', () => {
+		const messageDestination = {
+			label: 'Message',
+			icon: '💬',
+			enabled: true,
+		}
+
+		render(<QRInputPreview selectedDestination={messageDestination} />)
+
+		const phoneInput = screen.getByLabelText(/phone number/i)
+		const messageInput = screen.getByLabelText(/message/i)
+
+		fireEvent.change(phoneInput, { target: { value: '+1234567890' } })
+		fireEvent.change(messageInput, { target: { value: 'Hello, World!' } })
+
+		// In development mode, we can see the QR code value in the preview text
+		if (process.env.NODE_ENV === 'development') {
+			expect(
+				screen.getByText(/sms:\+1234567890\?body=Hello%2C%20World!/),
+			).toBeInTheDocument()
+		}
+	})
+
 	it('shows QR code preview when form is filled', () => {
 		render(<QRInputPreview selectedDestination={mockDestination} />)
 

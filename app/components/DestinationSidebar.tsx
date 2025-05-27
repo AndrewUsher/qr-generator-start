@@ -13,7 +13,7 @@ const destinations: Destination[] = [
 	{ label: 'Facebook', icon: '📘', enabled: false },
 	{ label: 'Upload a File', icon: '📁', enabled: false },
 	{ label: 'Instagram', icon: '📸', enabled: false },
-	{ label: 'Message', icon: '💬', enabled: false },
+	{ label: 'Message', icon: '💬', enabled: true },
 	{ label: 'Email', icon: '✉️', enabled: true },
 ]
 
