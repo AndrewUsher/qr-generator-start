@@ -24,6 +24,9 @@ export function QRInputPreview({
 	bgColor = '#ffffff',
 }: QRInputPreviewProps) {
 	const [qrValue, setQrValue] = React.useState('')
+	const [copyStatus, setCopyStatus] = React.useState<'idle' | 'success' | 'error'>('idle')
+
+	const svgRef = React.useRef<SVGSVGElement>(null)
 
 	const getQRCodeSize = () => {
 		switch (qrSize) {
@@ -74,6 +77,57 @@ export function QRInputPreview({
 		}
 	}
 
+	const handleDownload = () => {
+		const svg = svgRef.current
+		if (!svg) return
+		const serializer = new XMLSerializer()
+		const source = serializer.serializeToString(svg)
+		const svgBlob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' })
+		const url = URL.createObjectURL(svgBlob)
+		const link = document.createElement('a')
+		link.href = url
+		link.download = 'qr-code.svg'
+		document.body.appendChild(link)
+		link.click()
+		document.body.removeChild(link)
+		URL.revokeObjectURL(url)
+	}
+
+	const handleCopy = async () => {
+		const svg = svgRef.current
+		if (!svg) return
+		try {
+			const serializer = new XMLSerializer()
+			const source = serializer.serializeToString(svg)
+			const img = new window.Image()
+			const svg64 = btoa(unescape(encodeURIComponent(source)))
+			const image64 = `data:image/svg+xml;base64,${svg64}`
+			img.src = image64
+			img.onload = async () => {
+				const canvas = document.createElement('canvas')
+				canvas.width = svg.width.baseVal.value || getQRCodeSize()
+				canvas.height = svg.height.baseVal.value || getQRCodeSize()
+				const ctx = canvas.getContext('2d')
+				if (!ctx) return setCopyStatus('error')
+				ctx.drawImage(img, 0, 0)
+				canvas.toBlob(async (blob) => {
+					if (!blob) return setCopyStatus('error')
+					try {
+						await navigator.clipboard.write([
+							new window.ClipboardItem({ 'image/png': blob }),
+						])
+						setCopyStatus('success')
+						setTimeout(() => setCopyStatus('idle'), 1500)
+					} catch {
+						setCopyStatus('error')
+					}
+				}, 'image/png')
+			}
+		} catch {
+			setCopyStatus('error')
+		}
+	}
+
 	return (
 		<div className="flex flex-col items-center gap-4">
 			{renderForm()}
@@ -87,6 +141,7 @@ export function QRInputPreview({
 			>
 				{qrValue ? (
 					<QRCodeSVG
+						ref={svgRef}
 						value={qrValue}
 						size={getQRCodeSize()}
 						level="H"
@@ -94,11 +149,34 @@ export function QRInputPreview({
 						className="w-full h-full"
 						fgColor={fgColor}
 						bgColor={bgColor}
+						role="img"
 					/>
 				) : (
 					<span className="text-gray-400 text-2xl">QR Code</span>
 				)}
 			</div>
+			{qrValue && (
+				<div className="flex gap-2 mt-2">
+					<button
+						onClick={handleDownload}
+						type="button"
+						className="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm"
+					>
+						Download QR Code
+					</button>
+					<button
+						onClick={handleCopy}
+						type="button"
+						className="px-3 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm border border-gray-300"
+					>
+						{copyStatus === 'success'
+							? 'Copied!'
+							: copyStatus === 'error'
+							? 'Copy Failed'
+							: 'Copy QR Code Image'}
+					</button>
+				</div>
+			)}
 		</div>
 	)
 }
