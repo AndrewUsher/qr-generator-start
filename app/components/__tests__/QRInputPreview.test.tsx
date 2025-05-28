@@ -487,3 +487,40 @@ describe('QRInputPreview', () => {
 		expect(screen.getByRole('button', { name: 'Copy URL' })).toBeInTheDocument()
 	})
 })
+
+describe('QRInputPreview color customization', () => {
+	it('renders QR code with custom foreground color', () => {
+		render(
+			<QRInputPreview selectedDestination={mockDestination} qrSize="medium" fgColor="#ff0000" />
+		)
+		const svg = screen.getByRole('img') || document.querySelector('svg')
+		expect(svg).toBeTruthy()
+		// The QRCodeSVG component sets fgColor as the fill for the path
+		// We check that a path exists with the correct fill
+		const path = svg?.querySelector('path')
+		expect(path?.getAttribute('fill')).toBe('#ff0000')
+	})
+
+	it('renders QR code with custom background color', () => {
+		render(
+			<QRInputPreview selectedDestination={mockDestination} qrSize="medium" bgColor="#00ff00" />
+		)
+		const svg = screen.getByRole('img') || document.querySelector('svg')
+		expect(svg).toBeTruthy()
+		// The QRCodeSVG component sets bgColor as the fill for the rect
+		const rect = svg?.querySelector('rect')
+		expect(rect?.getAttribute('fill')).toBe('#00ff00')
+	})
+
+	it('renders QR code with both custom fgColor and bgColor', () => {
+		render(
+			<QRInputPreview selectedDestination={mockDestination} qrSize="medium" fgColor="#123456" bgColor="#abcdef" />
+		)
+		const svg = screen.getByRole('img') || document.querySelector('svg')
+		expect(svg).toBeTruthy()
+		const rect = svg?.querySelector('rect')
+		const path = svg?.querySelector('path')
+		expect(rect?.getAttribute('fill')).toBe('#abcdef')
+		expect(path?.getAttribute('fill')).toBe('#123456')
+	})
+})

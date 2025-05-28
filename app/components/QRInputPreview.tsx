@@ -13,11 +13,15 @@ type QRSize = 'small' | 'medium' | 'large'
 interface QRInputPreviewProps {
 	selectedDestination: Destination
 	qrSize: QRSize
+	fgColor?: string
+	bgColor?: string
 }
 
 export function QRInputPreview({
 	selectedDestination,
 	qrSize,
+	fgColor = '#000000',
+	bgColor = '#ffffff',
 }: QRInputPreviewProps) {
 	const [qrValue, setQrValue] = React.useState('')
 
@@ -88,6 +92,8 @@ export function QRInputPreview({
 						level="H"
 						includeMargin={false}
 						className="w-full h-full"
+						fgColor={fgColor}
+						bgColor={bgColor}
 					/>
 				) : (
 					<span className="text-gray-400 text-2xl">QR Code</span>
