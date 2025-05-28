@@ -10,10 +10,14 @@ const MAX_DIRECT_ENCODE_SIZE = 1500 // bytes, leaving some margin for QR code ov
 export function FileForm({ onValueChange }: FileFormProps) {
 	const [file, setFile] = React.useState<File | null>(null)
 	const [preview, setPreview] = React.useState<string | null>(null)
-	const [encodingStatus, setEncodingStatus] = React.useState<'direct' | 'external' | null>(null)
+	const [encodingStatus, setEncodingStatus] = React.useState<
+		'direct' | 'external' | null
+	>(null)
 	const fileInputRef = React.useRef<HTMLInputElement>(null)
 
-	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleFileChange = async (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => {
 		const selectedFile = event.target.files?.[0]
 		if (!selectedFile) return
 
@@ -83,7 +87,8 @@ export function FileForm({ onValueChange }: FileFormProps) {
 					<div className="flex flex-col items-center justify-center pt-5 pb-6">
 						<Upload className="w-8 h-8 mb-4 text-gray-500" />
 						<p className="mb-2 text-sm text-gray-500">
-							<span className="font-semibold">Click to upload</span> or drag and drop
+							<span className="font-semibold">Click to upload</span> or drag and
+							drop
 						</p>
 						<p className="text-xs text-gray-500">Max file size: 5MB</p>
 					</div>
@@ -133,11 +138,13 @@ export function FileForm({ onValueChange }: FileFormProps) {
 			)}
 
 			{encodingStatus && (
-				<div className={`flex items-center gap-2 p-3 rounded-lg ${
-					encodingStatus === 'direct' 
-						? 'bg-green-50 text-green-700' 
-						: 'bg-yellow-50 text-yellow-700'
-				}`}>
+				<div
+					className={`flex items-center gap-2 p-3 rounded-lg ${
+						encodingStatus === 'direct'
+							? 'bg-green-50 text-green-700'
+							: 'bg-yellow-50 text-yellow-700'
+					}`}
+				>
 					<AlertCircle className="w-5 h-5" />
 					<p className="text-sm">
 						{encodingStatus === 'direct'
@@ -148,4 +155,4 @@ export function FileForm({ onValueChange }: FileFormProps) {
 			)}
 		</div>
 	)
-} 
+}

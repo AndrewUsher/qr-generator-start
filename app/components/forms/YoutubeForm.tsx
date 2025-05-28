@@ -9,7 +9,8 @@ type YoutubeContentType = 'video' | 'channel' | 'playlist'
 
 export function YoutubeForm({ onValueChange }: YoutubeFormProps) {
 	const [url, setUrl] = React.useState('')
-	const [contentType, setContentType] = React.useState<YoutubeContentType>('video')
+	const [contentType, setContentType] =
+		React.useState<YoutubeContentType>('video')
 	const [copied, setCopied] = React.useState(false)
 	const [preview, setPreview] = React.useState<{
 		title: string
@@ -147,7 +148,11 @@ export function YoutubeForm({ onValueChange }: YoutubeFormProps) {
 							className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
 							aria-label="Copy URL"
 						>
-							{copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+							{copied ? (
+								<Check className="w-5 h-5" />
+							) : (
+								<Copy className="w-5 h-5" />
+							)}
 						</button>
 					</div>
 				</div>
@@ -160,7 +165,8 @@ export function YoutubeForm({ onValueChange }: YoutubeFormProps) {
 						alt={preview.title}
 						className="w-32 h-20 object-cover rounded"
 						onError={(e) => {
-							e.currentTarget.src = 'https://via.placeholder.com/320x180?text=Error'
+							e.currentTarget.src =
+								'https://via.placeholder.com/320x180?text=Error'
 						}}
 					/>
 					<div>
@@ -177,4 +183,4 @@ export function YoutubeForm({ onValueChange }: YoutubeFormProps) {
 			)}
 		</div>
 	)
-} 
+}

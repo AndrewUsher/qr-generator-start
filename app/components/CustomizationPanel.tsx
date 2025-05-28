@@ -22,10 +22,16 @@ const PREDEFINED_COLORS = [
 	'#6b7280', // Gray
 	'#f472b6', // Pink
 	'#facc15', // Gold
-	'#fff',    // White
+	'#fff', // White
 ]
 
-export function CustomizationPanel({ onSizeChange, onColorChange, onBgColorChange, selectedColor, selectedBgColor }: CustomizationPanelProps) {
+export function CustomizationPanel({
+	onSizeChange,
+	onColorChange,
+	onBgColorChange,
+	selectedColor,
+	selectedBgColor,
+}: CustomizationPanelProps) {
 	const [selectedSize, setSelectedSize] = React.useState<QRSize>('medium')
 	const [customColor, setCustomColor] = React.useState<string>('')
 	const [customBgColor, setCustomBgColor] = React.useState<string>('')
@@ -81,7 +87,7 @@ export function CustomizationPanel({ onSizeChange, onColorChange, onBgColorChang
 							key={color}
 							type="button"
 							className={`w-8 h-8 rounded-md border-2 flex items-center justify-center transition-colors ${
-								(selectedColor === color && !customColor)
+								selectedColor === color && !customColor
 									? 'border-blue-500'
 									: 'border-transparent hover:border-gray-400'
 							}`}
@@ -92,7 +98,9 @@ export function CustomizationPanel({ onSizeChange, onColorChange, onBgColorChang
 					))}
 				</div>
 				<div className="flex items-center gap-2 mb-2">
-					<label htmlFor="custom-color" className="text-sm text-gray-600">Custom:</label>
+					<label htmlFor="custom-color" className="text-sm text-gray-600">
+						Custom:
+					</label>
 					<input
 						type="color"
 						id="custom-color"
@@ -116,7 +124,7 @@ export function CustomizationPanel({ onSizeChange, onColorChange, onBgColorChang
 							key={color}
 							type="button"
 							className={`w-8 h-8 rounded-md border-2 flex items-center justify-center transition-colors ${
-								(selectedBgColor === color && !customBgColor)
+								selectedBgColor === color && !customBgColor
 									? 'border-blue-500'
 									: 'border-transparent hover:border-gray-400'
 							}`}
@@ -127,7 +135,9 @@ export function CustomizationPanel({ onSizeChange, onColorChange, onBgColorChang
 					))}
 				</div>
 				<div className="flex items-center gap-2 mb-2">
-					<label htmlFor="custom-bg-color" className="text-sm text-gray-600">Custom:</label>
+					<label htmlFor="custom-bg-color" className="text-sm text-gray-600">
+						Custom:
+					</label>
 					<input
 						type="color"
 						id="custom-bg-color"
