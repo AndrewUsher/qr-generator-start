@@ -1,133 +1,70 @@
-# QR Generator Start
+# QR Generator
 
-A modern web application built with TanStack Start, featuring server-side rendering and file-based routing.
+A modern, fully functional QR code generator web app built with React, TanStack Start, Tailwind CSS, and Shadcn UI. Generate QR codes for websites, emails, messages, Instagram, YouTube, and even files—with advanced customization and robust test coverage.
 
-## Architecture
-
-The application follows a modern React architecture using TanStack Start, which provides a powerful combination of server-side rendering and client-side hydration.
-
-### Directory Structure
-
-```mermaid
-graph TD
-    A[app/] --> B[routes/]
-    A --> C[client.tsx]
-    A --> D[router.tsx]
-    A --> E[ssr.tsx]
-    A --> F[styles/]
-    A --> G[components/]
-    F --> H[app.css]
-    G --> I[ui/]
-    I --> J[button.tsx]
-    G --> K[lib/]
-    K --> L[utils.ts]
-    G --> M[HeroSection.tsx]
-    G --> N[MainCard.tsx]
-    G --> O[DestinationSidebar.tsx]
-    G --> P[QRInputPreview.tsx]
-    G --> Q[CustomizationPanel.tsx]
-    B --> R[__root.tsx]
-    B --> S[index.tsx]
-    T[app.config.ts]
-    U[tsconfig.json]
-    V[package.json]
-    W[postcss.config.ts]
-```
-
-### Application Flow
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant SSR
-    participant Router
-    participant ServerFn
-
-    Client->>SSR: Initial Request
-    SSR->>Router: Create Router
-    Router->>ServerFn: Load Data
-    ServerFn-->>Router: Return Data
-    Router-->>SSR: Hydrated HTML
-    SSR-->>Client: Initial Page Load
-
-    Client->>ServerFn: User Action
-    ServerFn-->>Client: Updated Data
-    Client->>Router: Invalidate
-    Router-->>Client: Re-render
-```
-
-## Key Components
-
-### 1. Static UI Scaffold (2024 Redesign)
-
-The main page now features a static, modern UI scaffold:
-
-- **HeroSection**: Top hero area with headline, subheadline, and call-to-action buttons. (`app/components/HeroSection.tsx`)
-- **MainCard**: Main card container with three columns. (`app/components/MainCard.tsx`)
-  - **DestinationSidebar**: Vertical list of destination types. (`app/components/DestinationSidebar.tsx`)
-  - **QRInputPreview**: URL input and QR code preview. (`app/components/QRInputPreview.tsx`)
-  - **CustomizationPanel**: Pattern, color, and theme selectors. (`app/components/CustomizationPanel.tsx`)
-
-All components are styled with Tailwind CSS and follow Shadcn UI best practices. No functionality is implemented yet—this is a look-and-feel scaffold only.
-
-### 2. Server-Side Rendering (SSR)
-
-- Entry point: `app/ssr.tsx`
-- Handles initial server-side rendering
-- Integrates with TanStack Router for route management
-
-### 3. Client-Side Hydration
-
-- Entry point: `app/client.tsx`
-- Hydrates the server-rendered HTML
-- Initializes client-side routing
-
-### 4. Routing
-
-- File-based routing system
-- Root layout: `app/routes/__root.tsx`
-- Index route: `app/routes/index.tsx`
-- Router configuration: `app/router.tsx`
-
-## Styling & UI Components
-
-This project uses **Tailwind CSS** for utility-first styling, with a custom theme defined in `app/styles/app.css`. The setup also includes:
-
-- [shadcn/ui](https://ui.shadcn.com/) Button component (see `app/components/ui/button.tsx`)
-- Utility function for class name merging in `app/lib/utils.ts`
-- [class-variance-authority](https://cva.style/), [clsx](https://github.com/lukeed/clsx), and [tailwind-merge](https://tailwind-merge.vercel.app/) for advanced class management
-- [Radix UI Slot](https://www.radix-ui.com/primitives/docs/components/slot) for polymorphic components
-- [Lucide React](https://lucide.dev/) for icons (future use)
-
-### Adding Styles
-
-- Global styles and theme variables are in `app/styles/app.css` (imported in the root layout).
-- Use Tailwind utility classes in your components for rapid styling.
-- For custom UI elements, use or extend the components in `app/components/ui/`.
-
-### Example: Using the Button Component
-
-```tsx
-import { Button } from "@/components/ui/button";
-
-<Button variant="outline" size="lg">
-  Click me
-</Button>;
-```
+---
 
 ## Features
 
-- Static UI scaffold for QR generator (2024 redesign)
-- Server-side rendering
-- File-based routing
-- Type-safe server functions
-- Hot module replacement
-- Production-ready build system
+- **Multiple QR Destinations:**
+  - Website URLs
+  - Email (mailto)
+  - Text messages (SMS)
+  - Instagram (profile, post, reel)
+  - YouTube (video, channel, playlist)
+  - File upload (with direct encoding for small files)
+- **File Upload & Encoding:**
+  - Drag-and-drop or click to upload
+  - Image preview and file type detection
+  - Files ≤1.5KB are encoded directly as data URLs in the QR code
+  - Larger files show status and are not directly encoded
+- **Customization:**
+  - QR code size (small, medium, large)
+  - Foreground and background color pickers
+  - Pattern selection (UI only; see limitations)
+- **Live Preview:**
+  - See your QR code update in real time as you type or upload
+- **Download & Copy:**
+  - Download QR code as SVG
+  - Copy QR code image to clipboard
+- **Validation & Feedback:**
+  - Input validation for all destinations
+  - Status messages for file encoding, copy, and download actions
+- **Test Coverage:**
+  - Comprehensive tests for all forms, file upload, encoding, and UI actions
 
-## Development
+---
+
+## Technology Stack
+
+- **Framework:** TanStack Start (React, SSR, file-based routing)
+- **Styling:** Tailwind CSS, Shadcn UI, class-variance-authority, clsx, tailwind-merge
+- **UI Primitives:** Radix UI, Lucide React
+- **QR Code Rendering:** [qrcode.react](https://github.com/zpao/qrcode.react)
+- **Testing:** Vitest, React Testing Library
+
+---
+
+## Directory Structure
+
+```
+app/
+  components/
+    forms/           # All destination forms (WebsiteForm, EmailForm, etc.)
+    ui/              # Shadcn UI components
+    lib/             # Utility functions
+    ...
+  routes/            # File-based routing
+  styles/            # Tailwind and global CSS
+  ...
+```
+
+---
+
+## Usage
 
 ```bash
-# Install dependencies (now includes Tailwind, shadcn/ui, etc.)
+# Install dependencies
 npm install
 
 # Start development server
@@ -140,12 +77,45 @@ npm run build
 npm start
 ```
 
-## Technology Stack
+---
 
-- **Framework**: TanStack Start
-- **Routing**: TanStack Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS, shadcn/ui, class-variance-authority, clsx, tailwind-merge
-- **UI Primitives**: Radix UI, Lucide React
-- **Build Tool**: Vinxi
-- **Runtime**: Node.js
+## How It Works
+
+- **Select a Destination:** Choose from Website, Email, Message, Instagram, File, or YouTube in the sidebar.
+- **Fill Out the Form:** Each destination has a tailored form with validation and preview.
+- **Customize Your QR Code:** Use the Customization Panel to adjust size, colors, and pattern.
+- **Preview & Export:** See a live preview, then download or copy your QR code.
+- **File Upload:** Upload a file to encode it directly (if small) or get a status message if too large.
+
+---
+
+## Known Limitations
+
+- **QR Pattern Styling:**
+  - The pattern selection UI is present, but the current QR code library (`qrcode.react`) does not support per-module or advanced pattern styling. Only color and size are customizable.
+- **File Encoding Size Limit:**
+  - Files larger than ~1.5KB cannot be encoded directly in the QR code due to QR data capacity limits.
+
+---
+
+## Tests
+
+- All major features and edge cases are covered by tests in `app/components/__tests__/`.
+- Run tests with:
+
+```bash
+npm test
+```
+
+---
+
+## Credits
+
+- Built with [TanStack Start](https://tanstack.com/start), [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), and [qrcode.react](https://github.com/zpao/qrcode.react).
+- UI icons by [Lucide](https://lucide.dev/).
+
+---
+
+## License
+
+MIT
